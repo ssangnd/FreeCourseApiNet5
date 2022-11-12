@@ -41,6 +41,7 @@ namespace FreeCourseApiNet5
 
             //services.AddScoped<ILoaiRepository, LoaiRepository>();
             services.AddScoped<ILoaiRepository, LoaiRepositoryInMemory>();
+            services.AddScoped<IHangHoaRepository, HangHoaRepository>();
 
             ////add jwt to test return type code 401
             //var secretKey = Configuration["AppSettings:SecretKey"];

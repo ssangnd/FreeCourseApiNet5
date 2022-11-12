@@ -1,4 +1,5 @@
 ﻿using FreeCourseApiNet5.Data;
+using FreeCourseApiNet5.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,6 +38,10 @@ namespace FreeCourseApiNet5
             {
                 option.UseSqlServer(Configuration.GetConnectionString("sqlConnection"));
             });
+
+            //services.AddScoped<ILoaiRepository, LoaiRepository>();
+            services.AddScoped<ILoaiRepository, LoaiRepositoryInMemory>();
+
             ////add jwt to test return type code 401
             //var secretKey = Configuration["AppSettings:SecretKey"];
             //var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);

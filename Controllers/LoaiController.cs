@@ -42,13 +42,13 @@ namespace FreeCourseApiNet5.Controllers
 
         [HttpPost]
         //[Authorize]
-        public IActionResult Create(LoaiVm loaiVm)
+        public IActionResult Create(LoaiModel loaiModel)
         {
             try
             {
                 var loai = new Loai
                 {
-                    TenLoai = loaiVm.TenLoai
+                    TenLoai = loaiModel.TenLoai
                 };
                 _context.Add(loai);
                 _context.SaveChanges();
@@ -62,11 +62,11 @@ namespace FreeCourseApiNet5.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult GetById(int id, LoaiVm loaiVm)
+        public IActionResult GetById(int id, LoaiModel loaiModel)
         {
             var loai = _context.Loais.SingleOrDefault(x => x.MaLoai == id);
             if (loai == null) return NotFound();
-            loai.TenLoai = loaiVm.TenLoai;
+            loai.TenLoai = loaiModel.TenLoai;
             _context.SaveChanges();
             return NoContent();
         }

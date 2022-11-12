@@ -2,7 +2,7 @@
 
 namespace FreeCourseApiNet5.Models
 {
-    public class LoaiVm
+    public class LoaiModel
     {
         [Required]
         [MaxLength(50)]

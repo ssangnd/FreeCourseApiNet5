@@ -1,5 +1,7 @@
 ﻿using FreeCourseApiNet5.Data;
 using FreeCourseApiNet5.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
@@ -19,8 +21,15 @@ namespace FreeCourseApiNet5.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var dsLoai = _context.Loais.ToList();
-            return Ok(dsLoai);
+            try
+            {
+                var dsLoai = _context.Loais.ToList();
+                return Ok(dsLoai);
+            }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("{id}")]
@@ -32,6 +41,7 @@ namespace FreeCourseApiNet5.Controllers
         }
 
         [HttpPost]
+        //[Authorize]
         public IActionResult Create(LoaiVm loaiVm)
         {
             try
@@ -42,7 +52,8 @@ namespace FreeCourseApiNet5.Controllers
                 };
                 _context.Add(loai);
                 _context.SaveChanges();
-                return Ok(loai);
+                //return Ok(loai);
+                return StatusCode(StatusCodes.Status201Created, loai);
             }
             catch
             {
@@ -58,6 +69,22 @@ namespace FreeCourseApiNet5.Controllers
             loai.TenLoai = loaiVm.TenLoai;
             _context.SaveChanges();
             return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteLoaiById(int id)
+        {
+            var loai = _context.Loais.SingleOrDefault(lo => lo.MaLoai == id);
+            if (loai != null)
+            {
+                _context.Loais.Remove(loai);
+                _context.SaveChanges();
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }

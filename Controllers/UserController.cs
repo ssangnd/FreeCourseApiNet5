@@ -7,6 +7,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace FreeCourseApiNet5.Controllers
@@ -53,33 +54,74 @@ namespace FreeCourseApiNet5.Controllers
             });
         }
 
-        private string GenerateToken(NguoiDung nguoiDung)
+        //private string GenerateToken(NguoiDung nguoiDung)
+        //{
+        //    var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+        //    var secretKeyBytes = Encoding.UTF8.GetBytes(_appSettings.SecretKey);
+
+        //    var tokenDescription = new SecurityTokenDescriptor
+        //    {
+        //        Subject = new ClaimsIdentity(new[]
+        //        {
+        //            new Claim(ClaimTypes.Name,nguoiDung.HoTen),
+        //            new Claim(ClaimTypes.Email, nguoiDung.Email),
+        //            new Claim("UserName",nguoiDung.UserName),
+        //            new Claim("Id",nguoiDung.Id.ToString()),
+
+        //            //roles
+        //            new Claim("TokenId",Guid.NewGuid().ToString()),
+        //        }),
+        //        Expires = DateTime.UtcNow.AddMinutes(1),
+        //        SigningCredentials=new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes),
+        //        SecurityAlgorithms.HmacSha512Signature)
+        //    };
+
+        //    var token = jwtTokenHandler.CreateToken(tokenDescription);
+
+        //    return jwtTokenHandler.WriteToken(token);
+        //}
+
+        private TokenModel GenerateToken(NguoiDung nguoiDung)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
-
             var secretKeyBytes = Encoding.UTF8.GetBytes(_appSettings.SecretKey);
-
             var tokenDescription = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(ClaimTypes.Name,nguoiDung.HoTen),
-                    new Claim(ClaimTypes.Email, nguoiDung.Email),
-                    new Claim("UserName",nguoiDung.UserName),
-                    new Claim("Id",nguoiDung.Id.ToString()),
+                        new Claim(ClaimTypes.Name,nguoiDung.HoTen),
+                        new Claim(ClaimTypes.Email, nguoiDung.Email),
+                        new Claim("UserName",nguoiDung.UserName),
+                        new Claim("Id",nguoiDung.Id.ToString()),
 
-                    //roles
-                    new Claim("TokenId",Guid.NewGuid().ToString()),
-                }),
+                        //roles
+                        new Claim("TokenId",Guid.NewGuid().ToString()),
+                    }),
                 Expires = DateTime.UtcNow.AddMinutes(1),
-                SigningCredentials=new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes),
                 SecurityAlgorithms.HmacSha512Signature)
             };
 
             var token = jwtTokenHandler.CreateToken(tokenDescription);
+            var accessToken= jwtTokenHandler.WriteToken(token);
 
-            return jwtTokenHandler.WriteToken(token);
+            return new TokenModel
+            {
+                AccessToken = accessToken,
+                RefreshToken = GenerateRefreshToken()
+            };
+
         }
 
+        private string GenerateRefreshToken()
+        {
+            var random = new byte[32];
+            using (var rng=RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(random);
+                return Convert.ToBase64String(random);
+            }
+        }
     }
 }

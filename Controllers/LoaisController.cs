@@ -1,5 +1,6 @@
 ﻿using FreeCourseApiNet5.Models;
 using FreeCourseApiNet5.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -74,6 +75,7 @@ namespace FreeCourseApiNet5.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Add(LoaiModel loai)
         {
             try

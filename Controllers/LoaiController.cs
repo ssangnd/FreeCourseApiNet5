@@ -41,7 +41,7 @@ namespace FreeCourseApiNet5.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public IActionResult Create(LoaiModel loaiModel)
         {
             try

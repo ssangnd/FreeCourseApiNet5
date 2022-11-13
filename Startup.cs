@@ -1,4 +1,5 @@
 ﻿using FreeCourseApiNet5.Data;
+using FreeCourseApiNet5.Models;
 using FreeCourseApiNet5.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -43,25 +44,27 @@ namespace FreeCourseApiNet5
             services.AddScoped<ILoaiRepository, LoaiRepositoryInMemory>();
             services.AddScoped<IHangHoaRepository, HangHoaRepository>();
 
+            services.Configure<AppSetting>(Configuration.GetSection("AppSettings"));
+
             ////add jwt to test return type code 401
-            //var secretKey = Configuration["AppSettings:SecretKey"];
-            //var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+            var secretKey = Configuration["AppSettings:SecretKey"];
+            var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
-            //{
-            //    opt.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        //tự cấp token
-            //        ValidateIssuer = false,
-            //        ValidateAudience = false,
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    //tự cấp token
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
 
-            //        //ký vào token
-            //        ValidateIssuerSigningKey = true,
-            //        IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
+                    //ký vào token
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(secretKeyBytes),
 
-            //        ClockSkew = TimeSpan.Zero
-            //    };
-            //});
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
 
             services.AddSwaggerGen(c =>
@@ -83,6 +86,8 @@ namespace FreeCourseApiNet5
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
